@@ -411,13 +411,33 @@ class SubscriptionUpdater {
 			ContentValues subscriptionValues, XmlPullParser parser)
 			throws XmlPullParserException, IOException, ParseException {
 		// look for subscription details, stop at item tag
+		
+		int depthOfChannel = -1;
 		for (int eventType = parser.getEventType();
 				eventType != XmlPullParser.END_DOCUMENT;
 				eventType = parser.next()) {
+			if (eventType == XmlPullParser.END_TAG) {
+				--depthOfChannel;
+			}
+			
 			if (eventType != XmlPullParser.START_TAG)
 				continue;
 
 			String name = parser.getName();
+
+				
+			if (depthOfChannel < 0) {
+				if (name.equals("channel")) {
+					depthOfChannel = 0;
+				}
+				continue;
+			}
+			
+			if (depthOfChannel++ > 0) {
+				continue;
+			}
+			
+				
 			// if we're starting an item, move past the subscription details section
 			if (name.equals("item")) {
 				break;
