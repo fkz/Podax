@@ -149,7 +149,14 @@ class SubscriptionUpdater {
 
 						try {
 							XmlPullParser parser = Xml.newPullParser();
-							parser.setInput(responseStream, null);
+							//FIXME: Workaround, weil Encoding detection nicht funktioniert
+							String encoding = null;
+							Log.i("Podax", "Testing URI" + subscription.getUrl());
+							if (new URL(subscription.getUrl()).getHost().equals ("www.dradio.de")) {
+								encoding = "ISO-8859-1";
+								Log.w("Podax", "DRadio URI found, set encoding");
+							}
+							parser.setInput(responseStream, encoding);
 							processSubscriptionXML(subscriptionId, subscriptionValues, parser);
 							// parseSubscriptionXML stops when it finds an item tag
 							processPodcastXML(subscriptionId, subscription, parser);
